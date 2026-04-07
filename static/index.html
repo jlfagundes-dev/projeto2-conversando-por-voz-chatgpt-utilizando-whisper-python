@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assistente EVA</title>
+    <style>
+      :root {
+        --bg: #f4efe8;
+        --panel: #fffdf8;
+        --panel-soft: #f9f4ea;
+        --ink: #1f2937;
+        --muted: #6b7280;
+        --brand: #0f766e;
+        --brand-2: #14b8a6;
+        --accent: #eab308;
+        --danger: #dc2626;
+        --ok: #15803d;
+        --border: #e5ded3;
+        --shadow: 0 18px 50px rgba(18, 28, 45, 0.10);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top right, rgba(20, 184, 166, 0.18), transparent 30%),
+          radial-gradient(circle at bottom left, rgba(234, 179, 8, 0.12), transparent 24%),
+          linear-gradient(180deg, #faf7f1 0%, var(--bg) 100%);
+        padding: 24px;
+      }
+
+      .shell {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.5fr 0.9fr;
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .hero {
+        padding: 22px 24px;
+        background: linear-gradient(115deg, var(--brand), #0f9d92 58%, var(--brand-2));
+        color: white;
+      }
+
+      .hero__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        margin-bottom: 12px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(28px, 3vw, 40px);
+        line-height: 1.05;
+      }
+
+      .hero p {
+        margin: 10px 0 0;
+        max-width: 70ch;
+        color: rgba(255, 255, 255, 0.94);
+        line-height: 1.55;
+      }
+
+      .body {
+        padding: 18px;
+      }
+
+      .statusbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #fff, #fbf8f2);
+        margin-bottom: 16px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .status__dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #9ca3af;
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.0);
+      }
+
+      .status__dot.is-live {
+        background: var(--danger);
+        animation: pulse 1.4s infinite;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
+        background: var(--panel-soft);
+        color: var(--ink);
+        border: 1px solid var(--border);
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .actions__group {
+        display: grid;
+        gap: 10px;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        appearance: none;
+        border: 0;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+        transform: none;
+      }
+
+      .btn--primary {
+        color: white;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        box-shadow: 0 10px 22px rgba(15, 118, 110, 0.16);
+      }
+
+      .btn--danger {
+        color: white;
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+        box-shadow: 0 10px 22px rgba(185, 28, 28, 0.16);
+      }
+
+      .btn--ghost {
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--border);
+      }
+
+      .file {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px dashed #d8cdbd;
+      }
+
+      .file label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .file input {
+        width: 100%;
+      }
+
+      .meter {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid var(--border);
+      }
+
+      .meter__title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .meter__bar {
+        height: 10px;
+        border-radius: 999px;
+        background: #ede9e4;
+        overflow: hidden;
+      }
+
+      .meter__fill {
+        height: 100%;
+        width: 12%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), var(--brand-2));
+        transition: width 0.2s ease;
+      }
+
+      .history {
+        display: grid;
+        gap: 12px;
+      }
+
+      .bubble {
+        padding: 14px 16px;
+        border-radius: 18px;
+        line-height: 1.5;
+        border: 1px solid var(--border);
+        animation: rise 180ms ease-out;
+      }
+
+      .bubble__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .bubble__tag {
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #f3f4f6;
+        color: #374151;
+        font-weight: 700;
+      }
+
+      .bubble--user {
+        background: #e0f2fe;
+        border-color: #bae6fd;
+        justify-self: end;
+        max-width: 88%;
+      }
+
+      .bubble--assistant {
+        background: #fff8dd;
+        border-color: #fde68a;
+        justify-self: start;
+        max-width: 88%;
+      }
+
+      .bubble__audio {
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .feed {
+        padding: 16px 18px 18px;
+        border-top: 1px solid var(--border);
+        background: linear-gradient(180deg, #fffdf9, #faf7f1);
+        min-height: 390px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .feed__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .feed__header h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .feed__header span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .feed__list {
+        flex: 1;
+        overflow: auto;
+        display: grid;
+        gap: 12px;
+        padding-right: 4px;
+      }
+
+      .side {
+        display: grid;
+        gap: 18px;
+      }
+
+      .side__panel {
+        padding: 18px;
+      }
+
+      .side__panel h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+
+      .steps {
+        display: grid;
+        gap: 10px;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .steps li {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px;
+        align-items: start;
+        padding: 12px;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid var(--border);
+      }
+
+      .steps__num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        color: white;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      }
+
+      .tips {
+        display: grid;
+        gap: 10px;
+      }
+
+      .tip {
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .footer-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .processing {
+        color: var(--brand);
+        font-weight: 700;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card">
+        <header class="hero">
+          <div class="hero__eyebrow">Whisper + ChatGPT + gTTS</div>
+          <h1>Fale com a EVA e receba a resposta em voz.</h1>
+          <p>
+            Grave sua pergunta no microfone ou envie um arquivo de áudio. O sistema
+            transcreve com Whisper, gera a resposta com a API da OpenAI e sintetiza o áudio
+            com gTTS para reproduzir direto no navegador.
+          </p>
+        </header>
+
+        <div class="body">
+          <div class="statusbar">
+            <div class="status">
+              <span id="statusDot" class="status__dot"></span>
+              <span id="statusText">Pronto para gravar</span>
+            </div>
+            <div class="pill">
+              <span>Tempo</span>
+              <strong id="timer">00:00</strong>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div class="actions__group">
+              <div class="control-row">
+                <button id="recordBtn" class="btn btn--primary" type="button">Gravar voz</button>
+                <button id="stopBtn" class="btn btn--danger hidden" type="button">Parar gravação</button>
+                <button id="clearBtn" class="btn btn--ghost" type="button">Limpar histórico</button>
+              </div>
+
+              <div class="meter">
+                <div class="meter__title">
+                  <span>Entrada de voz</span>
+                  <span id="meterLabel">Aguardando áudio</span>
+                </div>
+                <div class="meter__bar">
+                  <div id="meterFill" class="meter__fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="file">
+              <label for="audioFile">Ou envie um arquivo de áudio</label>
+              <input id="audioFile" type="file" accept="audio/*" />
+              <button id="uploadBtn" class="btn btn--ghost" type="button">Enviar arquivo</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="feed">
+          <div class="feed__header">
+            <h2>Histórico</h2>
+            <span id="feedHint">Nenhuma interação ainda.</span>
+          </div>
+          <div id="feedList" class="feed__list"></div>
+        </section>
+      </section>
+
+      <aside class="side">
+        <section class="card side__panel">
+          <h3>Fluxo da solução</h3>
+          <ul class="steps">
+            <li>
+              <span class="steps__num">1</span>
+              <div>Você fala ao microfone ou faz upload de um áudio.</div>
+            </li>
+            <li>
+              <span class="steps__num">2</span>
+              <div>Whisper transcreve o conteúdo em texto.</div>
+            </li>
+            <li>
+              <span class="steps__num">3</span>
+              <div>A API da OpenAI gera uma resposta inteligente em português.</div>
+            </li>
+            <li>
+              <span class="steps__num">4</span>
+              <div>gTTS sintetiza a resposta e o navegador reproduz o áudio.</div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card side__panel">
+          <h3>Dicas rápidas</h3>
+          <div class="tips">
+            <div class="tip">Teste frases como: "quero cancelar meu pedido" ou "preciso de ajuda com pagamento".</div>
+            <div class="tip">Se a chave da OpenAI não estiver configurada, o app usa uma resposta de demonstração para continuar funcionando.</div>
+            <div class="tip">O áudio gerado fica disponível pelo endpoint retornado na resposta da API.</div>
+          </div>
+          <p class="footer-note">Interface pensada para manter o visual amigável, mas agora alinhada ao fluxo de voz completo.</p>
+        </section>
+      </aside>
+    </main>
+
+    <script>
+      const recordBtn = document.getElementById("recordBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const uploadBtn = document.getElementById("uploadBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const audioFile = document.getElementById("audioFile");
+      const feedList = document.getElementById("feedList");
+      const feedHint = document.getElementById("feedHint");
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
+      const meterLabel = document.getElementById("meterLabel");
+      const meterFill = document.getElementById("meterFill");
+      const timer = document.getElementById("timer");
+
+      let mediaStream = null;
+      let recorder = null;
+      let chunks = [];
+      let timerInterval = null;
+      let startTime = null;
+
+      function formatTime(seconds) {
+        const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const secs = String(seconds % 60).padStart(2, "0");
+        return `${mins}:${secs}`;
+      }
+
+      function setRecordingState(isRecording) {
+        statusDot.classList.toggle("is-live", isRecording);
+        statusText.textContent = isRecording ? "Gravando audio..." : "Pronto para gravar";
+        meterLabel.textContent = isRecording ? "Capturando microfone" : "Aguardando áudio";
+        recordBtn.classList.toggle("hidden", isRecording);
+        stopBtn.classList.toggle("hidden", !isRecording);
+        meterFill.style.width = isRecording ? "72%" : "12%";
+      }
+
+      function startTimer() {
+        startTime = Date.now();
+        timer.textContent = "00:00";
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          timer.textContent = formatTime(elapsed);
+        }, 500);
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timer.textContent = "00:00";
+      }
+
+      function addMessage({ role, title, text, audioUrl, meta }) {
+        const article = document.createElement("article");
+        article.className = `bubble bubble--${role}`;
+
+        const metaRow = document.createElement("div");
+        metaRow.className = "bubble__meta";
+
+        const titleTag = document.createElement("span");
+        titleTag.className = "bubble__tag";
+        titleTag.textContent = title;
+        metaRow.appendChild(titleTag);
+
+        if (meta) {
+          const metaText = document.createElement("span");
+          metaText.textContent = meta;
+          metaRow.appendChild(metaText);
+        }
+
+        const body = document.createElement("div");
+        body.textContent = text;
+
+        article.appendChild(metaRow);
+        article.appendChild(body);
+
+        if (audioUrl) {
+          const audio = document.createElement("audio");
+          audio.className = "bubble__audio";
+          audio.controls = true;
+          audio.src = audioUrl;
+          article.appendChild(audio);
+        }
+
+        feedList.appendChild(article);
+        feedList.scrollTop = feedList.scrollHeight;
+        feedHint.textContent = "Interacao processada.";
+      }
+
+      function setProcessing(message) {
+        statusText.textContent = message;
+        meterLabel.textContent = "Processando";
+        meterFill.style.width = "92%";
+      }
+
+      function resetProcessingState() {
+        meterFill.style.width = "12%";
+        setRecordingState(false);
+      }
+
+      async function enviarAudio(blobOrFile, fileName) {
+        setProcessing("Enviando áudio para Whisper...");
+
+        const formData = new FormData();
+        const file = blobOrFile instanceof File
+          ? blobOrFile
+          : new File([blobOrFile], fileName || "audio.webm", { type: blobOrFile.type || "audio/webm" });
+
+        formData.append("audio", file, file.name);
+
+        const response = await fetch("/api/voice", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          let detail = "Falha ao processar audio.";
+          try {
+            const errorBody = await response.json();
+            detail = errorBody.detail || detail;
+          } catch (error) {
+            // fallback silencioso
+          }
+          throw new Error(detail);
+        }
+
+        return response.json();
+      }
+
+      async function processarArquivo(file) {
+        if (!file) {
+          addMessage({
+            role: "assistant",
+            title: "EVA",
+            text: "Selecione um arquivo de áudio antes de enviar.",
+          });
+          return;
+        }
+
+        try {
+          const resultado = await enviarAudio(file, file.name);
+          renderResultado(resultado);
+        } catch (error) {
+          addMessage({
+            role: "assistant",
+            title: "EVA",
+            text: error.message || "Nao consegui processar este audio.",
+          });
+        } finally {
+          resetProcessingState();
+        }
+      }
+
+      function renderResultado(resultado) {
+        const transcript = resultado.transcricao || "Sem transcrição disponível.";
+        const answer = resultado.resposta || "Sem resposta disponível.";
+        const audioUrl = resultado.audio_url || null;
+        const meta = `${resultado.origem_resposta || "mock"} • Whisper ${resultado.modelo_whisper || "base"}`;
+
+        addMessage({
+          role: "user",
+          title: "Transcrição",
+          text: `Entendi do seu áudio: ${transcript}`,
+          meta: `Confiança ${Math.round((resultado.confianca || 0) * 100)}%`,
+        });
+
+        addMessage({
+          role: "assistant",
+          title: "EVA",
+          text: answer,
+          audioUrl,
+          meta,
+        });
+
+        if (audioUrl) {
+          const player = new Audio(audioUrl);
+          player.play().catch(() => {});
+        }
+      }
+
+      recordBtn.addEventListener("click", async () => {
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          recorder = new MediaRecorder(mediaStream);
+          chunks = [];
+
+          recorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              chunks.push(event.data);
+            }
+          };
+
+          recorder.onstop = async () => {
+            const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+            try {
+              const resultado = await enviarAudio(blob, "gravacao.webm");
+              renderResultado(resultado);
+            } catch (error) {
+              addMessage({
+                role: "assistant",
+                title: "EVA",
+                text: error.message || "Nao consegui processar a gravação.",
+              });
+            } finally {
+              chunks = [];
+              mediaStream?.getTracks()?.forEach((track) => track.stop());
+              mediaStream = null;
+              recorder = null;
+              stopTimer();
+              resetProcessingState();
+            }
+          };
+
+          recorder.start();
+          setRecordingState(true);
+          statusText.textContent = "Permissão concedida. Gravando...";
+          startTimer();
+        } catch (error) {
+          addMessage({
+            role: "assistant",
+            title: "EVA",
+            text: "Nao consegui acessar o microfone. Verifique as permissoes do navegador.",
+          });
+        }
+      });
+
+      stopBtn.addEventListener("click", () => {
+        if (recorder && recorder.state !== "inactive") {
+          setProcessing("Finalizando gravação...");
+          recorder.stop();
+        }
+      });
+
+      uploadBtn.addEventListener("click", () => {
+        processarArquivo(audioFile.files[0]);
+      });
+
+      clearBtn.addEventListener("click", () => {
+        feedList.innerHTML = "";
+        feedHint.textContent = "Nenhuma interação ainda.";
+        addMessage({
+          role: "assistant",
+          title: "EVA",
+          text: "Histórico limpo. Pode falar novamente.",
+        });
+      });
+
+      addMessage({
+        role: "assistant",
+        title: "EVA",
+        text: "Olá! Clique em Gravar voz ou envie um arquivo para começar.",
+        meta: "Pronta para ouvir",
+      });
+    </script>
+  </body>
+</html>
