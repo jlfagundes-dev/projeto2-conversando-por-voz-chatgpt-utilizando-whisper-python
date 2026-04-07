@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - WHISPER_MODEL=small
+      - OPENAI_CHAT_MODEL=gpt-4o-mini
+      - GTTS_LANG=pt
+      - GTTS_TLD=com.br
+      - UVICORN_RELOAD=false
+    restart: always
