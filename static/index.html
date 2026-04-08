@@ -11,8 +11,8 @@
         --panel-soft: #f9f4ea;
         --ink: #1f2937;
         --muted: #6b7280;
-        --brand: #0f766e;
-        --brand-2: #14b8a6;
+        --brand: #b91c1c;
+        --brand-2: #ef4444;
         --accent: #eab308;
         --danger: #dc2626;
         --ok: #15803d;
@@ -30,7 +30,7 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         color: var(--ink);
         background:
-          radial-gradient(circle at top right, rgba(20, 184, 166, 0.18), transparent 30%),
+          radial-gradient(circle at top right, rgba(239, 68, 68, 0.18), transparent 30%),
           radial-gradient(circle at bottom left, rgba(234, 179, 8, 0.12), transparent 24%),
           linear-gradient(180deg, #faf7f1 0%, var(--bg) 100%);
         padding: 24px;
@@ -54,33 +54,14 @@
 
       .hero {
         padding: 22px 24px;
-        background: linear-gradient(115deg, var(--brand), #0f9d92 58%, var(--brand-2));
+        background: linear-gradient(115deg, #7f1d1d, var(--brand) 58%, var(--brand-2));
         color: white;
-      }
-
-      .hero__eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.16);
-        font-size: 12px;
-        letter-spacing: 0.02em;
-        margin-bottom: 12px;
       }
 
       .hero h1 {
         margin: 0;
         font-size: clamp(28px, 3vw, 40px);
         line-height: 1.05;
-      }
-
-      .hero p {
-        margin: 10px 0 0;
-        max-width: 70ch;
-        color: rgba(255, 255, 255, 0.94);
-        line-height: 1.55;
       }
 
       .body {
@@ -135,7 +116,7 @@
 
       .actions {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
+        grid-template-columns: 1fr;
         gap: 12px;
         margin-bottom: 14px;
       }
@@ -175,7 +156,7 @@
       .btn--primary {
         color: white;
         background: linear-gradient(135deg, var(--brand), var(--brand-2));
-        box-shadow: 0 10px 22px rgba(15, 118, 110, 0.16);
+        box-shadow: 0 10px 22px rgba(185, 28, 28, 0.20);
       }
 
       .btn--danger {
@@ -188,24 +169,6 @@
         color: var(--ink);
         background: #fff;
         border: 1px solid var(--border);
-      }
-
-      .file {
-        display: grid;
-        gap: 8px;
-        padding: 14px;
-        border-radius: 16px;
-        background: #fff;
-        border: 1px dashed #d8cdbd;
-      }
-
-      .file label {
-        font-size: 13px;
-        color: var(--muted);
-      }
-
-      .file input {
-        width: 100%;
       }
 
       .meter {
@@ -236,13 +199,8 @@
         height: 100%;
         width: 12%;
         border-radius: inherit;
-        background: linear-gradient(90deg, var(--accent), var(--brand-2));
+        background: linear-gradient(90deg, #fca5a5, var(--brand));
         transition: width 0.2s ease;
-      }
-
-      .history {
-        display: grid;
-        gap: 12px;
       }
 
       .bubble {
@@ -339,36 +297,6 @@
         font-size: 18px;
       }
 
-      .steps {
-        display: grid;
-        gap: 10px;
-        padding: 0;
-        margin: 0;
-        list-style: none;
-      }
-
-      .steps li {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 10px;
-        align-items: start;
-        padding: 12px;
-        border-radius: 14px;
-        background: #fff;
-        border: 1px solid var(--border);
-      }
-
-      .steps__num {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-weight: 800;
-        color: white;
-        background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      }
-
       .tips {
         display: grid;
         gap: 10px;
@@ -383,19 +311,8 @@
         line-height: 1.5;
       }
 
-      .footer-note {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-
       .hidden {
         display: none !important;
-      }
-
-      .processing {
-        color: var(--brand);
-        font-weight: 700;
       }
 
       @keyframes rise {
@@ -436,13 +353,7 @@
     <main class="shell">
       <section class="card">
         <header class="hero">
-          <div class="hero__eyebrow">Whisper + ChatGPT + gTTS</div>
-          <h1>Fale com a EVA e receba a resposta em voz.</h1>
-          <p>
-            Grave sua pergunta no microfone ou envie um arquivo de áudio. O sistema
-            transcreve com Whisper, gera a resposta com a API da OpenAI e sintetiza o áudio
-            com gTTS para reproduzir direto no navegador.
-          </p>
+          <h1>EVA - Assistente Financeiro por Voz</h1>
         </header>
 
         <div class="body">
@@ -475,12 +386,6 @@
                 </div>
               </div>
             </div>
-
-            <div class="file">
-              <label for="audioFile">Ou envie um arquivo de áudio</label>
-              <input id="audioFile" type="file" accept="audio/*" />
-              <button id="uploadBtn" class="btn btn--ghost" type="button">Enviar arquivo</button>
-            </div>
           </div>
         </div>
 
@@ -495,35 +400,12 @@
 
       <aside class="side">
         <section class="card side__panel">
-          <h3>Fluxo da solução</h3>
-          <ul class="steps">
-            <li>
-              <span class="steps__num">1</span>
-              <div>Você fala ao microfone ou faz upload de um áudio.</div>
-            </li>
-            <li>
-              <span class="steps__num">2</span>
-              <div>Whisper transcreve o conteúdo em texto.</div>
-            </li>
-            <li>
-              <span class="steps__num">3</span>
-              <div>A API da OpenAI gera uma resposta inteligente em português.</div>
-            </li>
-            <li>
-              <span class="steps__num">4</span>
-              <div>gTTS sintetiza a resposta e o navegador reproduz o áudio.</div>
-            </li>
-          </ul>
-        </section>
-
-        <section class="card side__panel">
           <h3>Dicas rápidas</h3>
           <div class="tips">
-            <div class="tip">Teste frases como: "quero cancelar meu pedido" ou "preciso de ajuda com pagamento".</div>
-            <div class="tip">Se a chave da OpenAI não estiver configurada, o app usa uma resposta de demonstração para continuar funcionando.</div>
-            <div class="tip">O áudio gerado fica disponível pelo endpoint retornado na resposta da API.</div>
+            <div class="tip">Pergunte sobre saldo, limite, fatura, pagamento, pix e opções de crédito para respostas mais precisas.</div>
+            <div class="tip">Fale em frases curtas e objetivas para melhorar a transcrição e acelerar a resposta.</div>
+            <div class="tip">Em caso de dúvida sobre segurança, peça orientações sobre bloqueio de cartão e prevenção de fraudes.</div>
           </div>
-          <p class="footer-note">Interface pensada para manter o visual amigável, mas agora alinhada ao fluxo de voz completo.</p>
         </section>
       </aside>
     </main>
@@ -531,9 +413,7 @@
     <script>
       const recordBtn = document.getElementById("recordBtn");
       const stopBtn = document.getElementById("stopBtn");
-      const uploadBtn = document.getElementById("uploadBtn");
       const clearBtn = document.getElementById("clearBtn");
-      const audioFile = document.getElementById("audioFile");
       const feedList = document.getElementById("feedList");
       const feedHint = document.getElementById("feedHint");
       const statusDot = document.getElementById("statusDot");
@@ -547,6 +427,7 @@
       let chunks = [];
       let timerInterval = null;
       let startTime = null;
+      let uiState = "ocioso";
 
       function formatTime(seconds) {
         const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -554,13 +435,29 @@
         return `${mins}:${secs}`;
       }
 
-      function setRecordingState(isRecording) {
+      function setUiState(nextState, customMessage = "") {
+        uiState = nextState;
+
+        const isRecording = nextState === "gravando";
+        const isProcessing = nextState === "processando";
+
         statusDot.classList.toggle("is-live", isRecording);
-        statusText.textContent = isRecording ? "Gravando audio..." : "Pronto para gravar";
-        meterLabel.textContent = isRecording ? "Capturando microfone" : "Aguardando áudio";
-        recordBtn.classList.toggle("hidden", isRecording);
+        recordBtn.classList.toggle("hidden", isRecording || isProcessing);
         stopBtn.classList.toggle("hidden", !isRecording);
-        meterFill.style.width = isRecording ? "72%" : "12%";
+
+        if (nextState === "ocioso") {
+          statusText.textContent = customMessage || "Pronto para gravar";
+          meterLabel.textContent = "Aguardando áudio";
+          meterFill.style.width = "12%";
+        } else if (nextState === "gravando") {
+          statusText.textContent = customMessage || "Gravando áudio...";
+          meterLabel.textContent = "Capturando microfone";
+          meterFill.style.width = "72%";
+        } else {
+          statusText.textContent = customMessage || "Processando áudio...";
+          meterLabel.textContent = "Processando";
+          meterFill.style.width = "92%";
+        }
       }
 
       function startTimer() {
@@ -613,22 +510,11 @@
 
         feedList.appendChild(article);
         feedList.scrollTop = feedList.scrollHeight;
-        feedHint.textContent = "Interacao processada.";
-      }
-
-      function setProcessing(message) {
-        statusText.textContent = message;
-        meterLabel.textContent = "Processando";
-        meterFill.style.width = "92%";
-      }
-
-      function resetProcessingState() {
-        meterFill.style.width = "12%";
-        setRecordingState(false);
+        feedHint.textContent = "Conversa em andamento.";
       }
 
       async function enviarAudio(blobOrFile, fileName) {
-        setProcessing("Enviando áudio para Whisper...");
+        setUiState("processando", "Enviando áudio para Whisper...");
 
         const formData = new FormData();
         const file = blobOrFile instanceof File
@@ -643,7 +529,7 @@
         });
 
         if (!response.ok) {
-          let detail = "Falha ao processar audio.";
+          let detail = "Falha ao processar áudio.";
           try {
             const errorBody = await response.json();
             detail = errorBody.detail || detail;
@@ -654,30 +540,6 @@
         }
 
         return response.json();
-      }
-
-      async function processarArquivo(file) {
-        if (!file) {
-          addMessage({
-            role: "assistant",
-            title: "EVA",
-            text: "Selecione um arquivo de áudio antes de enviar.",
-          });
-          return;
-        }
-
-        try {
-          const resultado = await enviarAudio(file, file.name);
-          renderResultado(resultado);
-        } catch (error) {
-          addMessage({
-            role: "assistant",
-            title: "EVA",
-            text: error.message || "Nao consegui processar este audio.",
-          });
-        } finally {
-          resetProcessingState();
-        }
       }
 
       function renderResultado(resultado) {
@@ -728,7 +590,7 @@
               addMessage({
                 role: "assistant",
                 title: "EVA",
-                text: error.message || "Nao consegui processar a gravação.",
+                text: error.message || "Não consegui processar a gravação.",
               });
             } finally {
               chunks = [];
@@ -736,32 +598,28 @@
               mediaStream = null;
               recorder = null;
               stopTimer();
-              resetProcessingState();
+              setUiState("ocioso");
             }
           };
 
           recorder.start();
-          setRecordingState(true);
-          statusText.textContent = "Permissão concedida. Gravando...";
+          setUiState("gravando", "Permissão concedida. Gravando...");
           startTimer();
         } catch (error) {
           addMessage({
             role: "assistant",
             title: "EVA",
-            text: "Nao consegui acessar o microfone. Verifique as permissoes do navegador.",
+            text: "Não consegui acessar o microfone. Verifique as permissões do navegador.",
           });
+          setUiState("ocioso");
         }
       });
 
       stopBtn.addEventListener("click", () => {
-        if (recorder && recorder.state !== "inactive") {
-          setProcessing("Finalizando gravação...");
+        if (uiState === "gravando" && recorder && recorder.state !== "inactive") {
+          setUiState("processando", "Finalizando gravação...");
           recorder.stop();
         }
-      });
-
-      uploadBtn.addEventListener("click", () => {
-        processarArquivo(audioFile.files[0]);
       });
 
       clearBtn.addEventListener("click", () => {
@@ -777,9 +635,11 @@
       addMessage({
         role: "assistant",
         title: "EVA",
-        text: "Olá! Clique em Gravar voz ou envie um arquivo para começar.",
+        text: "Olá! Clique em Gravar voz para começar a conversar em tempo real.",
         meta: "Pronta para ouvir",
       });
+
+      setUiState("ocioso");
     </script>
   </body>
 </html>
