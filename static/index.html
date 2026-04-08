@@ -470,10 +470,21 @@
         }, 500);
       }
 
-      function stopTimer() {
+      function stopTimer(reset = true) {
         clearInterval(timerInterval);
         timerInterval = null;
-        timer.textContent = "00:00";
+        if (reset) {
+          timer.textContent = "00:00";
+        }
+      }
+
+      function stopMediaStream() {
+        if (!mediaStream) {
+          return;
+        }
+
+        mediaStream.getTracks().forEach((track) => track.stop());
+        mediaStream = null;
       }
 
       function addMessage({ role, title, text, audioUrl, meta }) {
@@ -582,7 +593,12 @@
           };
 
           recorder.onstop = async () => {
-            const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+            const mimeType = recorder?.mimeType || "audio/webm";
+            const partes = [...chunks];
+            chunks = [];
+            stopMediaStream();
+
+            const blob = new Blob(partes, { type: mimeType });
             try {
               const resultado = await enviarAudio(blob, "gravacao.webm");
               renderResultado(resultado);
@@ -593,9 +609,6 @@
                 text: error.message || "Não consegui processar a gravação.",
               });
             } finally {
-              chunks = [];
-              mediaStream?.getTracks()?.forEach((track) => track.stop());
-              mediaStream = null;
               recorder = null;
               stopTimer();
               setUiState("ocioso");
@@ -617,6 +630,7 @@
 
       stopBtn.addEventListener("click", () => {
         if (uiState === "gravando" && recorder && recorder.state !== "inactive") {
+          stopTimer(false);
           setUiState("processando", "Finalizando gravação...");
           recorder.stop();
         }
