@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=2)
-def _carregar_modelo_whisper(nome_modelo: str):
+def carregar_modelo_whisper(nome_modelo: str):
     """Carrega o modelo Whisper apenas uma vez por nome."""
     try:
         import whisper
@@ -30,7 +30,7 @@ def transcrever_audio(
     """Transcreve um audio em bytes para texto usando Whisper."""
     try:
         logger.info("Iniciando transcricao com Whisper modelo=%s", modelo)
-        whisper_model = _carregar_modelo_whisper(modelo)
+        whisper_model = carregar_modelo_whisper(modelo)
         sufixo = os.path.splitext(nome_arquivo or "audio.webm")[1] or ".webm"
         with tempfile.NamedTemporaryFile(delete=False, suffix=sufixo) as arquivo_temporario:
             arquivo_temporario.write(arquivo_audio)
