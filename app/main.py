@@ -1,5 +1,6 @@
 """Assistente de Voz EVA - API Principal."""
 
+import logging
 import os
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -7,6 +8,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import voice
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s] %(asctime)s %(name)s - %(message)s",
+)
 
 # Inicializa a aplicacao FastAPI
 app = FastAPI(
@@ -44,7 +51,7 @@ async def root():
         "aplicacao": "Assistente de Voz EVA",
         "descricao": "Assistente de voz com Whisper, ChatGPT e gTTS",
         "endpoints": {
-            "POST /api/voice": "Recebe audio do microfone ou upload e devolve resposta em texto e voz",
+            "POST /api/voice": "Recebe audio do microfone e devolve resposta em texto e voz",
             "GET /api/health": "Verifica saude da API",
         },
     }

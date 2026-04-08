@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 import os
+import time
 
-from app.services.chatgpt_service import gerar_resposta_chatgpt
+from app.services.ia_service import gerar_resposta_ia
 from app.services.transcricao import transcrever_audio
 from app.services.tts_service import sintetizar_resposta
+
+
+logger = logging.getLogger(__name__)
 
 
 def processar_audio(
@@ -15,7 +20,9 @@ def processar_audio(
     modelo_whisper: str | None = None,
 ) -> dict:
     """Processa um audio enviado pelo usuario e devolve resposta em texto e voz."""
+    inicio = time.perf_counter()
     modelo = modelo_whisper or os.getenv("WHISPER_MODEL", "base")
+    logger.info("Pipeline iniciado: modelo_whisper=%s arquivo=%s", modelo, nome_arquivo)
 
     transcricao = transcrever_audio(
         arquivo_audio=arquivo_audio,
@@ -25,17 +32,32 @@ def processar_audio(
     )
 
     if not transcricao.get("sucesso"):
+        logger.error("Falha na transcricao: %s", transcricao.get("erro", "erro desconhecido"))
         return {
             "sucesso": False,
             "transcricao": "",
             "resposta": "",
             "audio_url": None,
             "modelo_whisper": modelo,
-            "erro": transcricao.get("erro", "Falha ao transcrever audio."),
+            "erro": "Nao foi possivel transcrever o audio. Tente novamente.",
         }
 
-    resposta = gerar_resposta_chatgpt(transcricao["transcricao"])
-    audio = sintetizar_resposta(resposta["resposta"])
+    try:
+        resposta = gerar_resposta_ia(transcricao["transcricao"])
+        audio = sintetizar_resposta(resposta["resposta"])
+    except Exception:
+        logger.exception("Falha no pipeline de resposta/sintese")
+        return {
+            "sucesso": False,
+            "transcricao": transcricao.get("transcricao", ""),
+            "resposta": "",
+            "audio_url": None,
+            "modelo_whisper": transcricao.get("modelo", modelo),
+            "erro": "Nao foi possivel gerar a resposta em voz agora.",
+        }
+
+    tempo_total = (time.perf_counter() - inicio) * 1000
+    logger.info("Pipeline finalizado com sucesso em %.2fms", tempo_total)
 
     return {
         "sucesso": True,
@@ -44,7 +66,7 @@ def processar_audio(
         "resposta": resposta["resposta"],
         "origem_resposta": resposta.get("origem", "mock"),
         "modelo_whisper": transcricao.get("modelo", modelo),
-        "modelo_chat": resposta.get("modelo", os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")),
+        "modelo_chat": resposta.get("modelo", os.getenv("GROQ_CHAT_MODEL", "llama-3.1-8b-instant")),
         "audio_url": audio["audio_url"],
         "idioma_tts": audio.get("idioma", "pt"),
     }

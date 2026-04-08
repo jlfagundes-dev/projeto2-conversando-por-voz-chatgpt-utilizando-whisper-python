@@ -1,8 +1,12 @@
 """Servicos de transcricao usando Whisper."""
 
+import logging
 import os
 import tempfile
 from functools import lru_cache
+
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=2)
@@ -25,6 +29,7 @@ def transcrever_audio(
 ) -> dict:
     """Transcreve um audio em bytes para texto usando Whisper."""
     try:
+        logger.info("Iniciando transcricao com Whisper modelo=%s", modelo)
         whisper_model = _carregar_modelo_whisper(modelo)
         sufixo = os.path.splitext(nome_arquivo or "audio.webm")[1] or ".webm"
         with tempfile.NamedTemporaryFile(delete=False, suffix=sufixo) as arquivo_temporario:
@@ -55,11 +60,12 @@ def transcrever_audio(
             "modelo": modelo,
             "sucesso": True,
         }
-    except Exception as erro:
+    except Exception:
+        logger.exception("Erro durante a transcricao do audio")
         return {
             "transcricao": "",
             "confianca": 0.0,
             "modelo": modelo,
             "sucesso": False,
-            "erro": str(erro),
+            "erro": "Falha ao transcrever audio.",
         }
