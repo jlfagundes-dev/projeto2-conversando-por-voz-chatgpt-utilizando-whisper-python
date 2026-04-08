@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: eva-voice-assistant
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
