@@ -1,5 +1,7 @@
 """Assistente de Voz EVA - API Principal."""
 
+from __future__ import annotations
+
 import logging
 import os
 from fastapi import FastAPI
@@ -8,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import voice
+from app.services.transcricao import carregar_modelo_whisper
 
 
 logging.basicConfig(
@@ -38,6 +41,17 @@ app.include_router(voice.router)
 static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+@app.on_event("startup")
+async def preload_whisper_model() -> None:
+    """Carrega o modelo Whisper antes da primeira requisicao."""
+    modelo = os.getenv("WHISPER_MODEL", "base")
+    try:
+        carregar_modelo_whisper(modelo)
+        logging.getLogger(__name__).info("Whisper pre-carregado com modelo=%s", modelo)
+    except Exception:
+        logging.getLogger(__name__).exception("Falha ao pre-carregar Whisper")
 
 
 @app.get("/")
