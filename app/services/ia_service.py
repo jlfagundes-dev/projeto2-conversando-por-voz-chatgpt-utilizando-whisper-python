@@ -1,8 +1,12 @@
-"""Servicos de geracao de resposta usando a API da OpenAI."""
+"""Servicos de geracao de resposta usando a API da Groq."""
 
 from __future__ import annotations
 
+import logging
 import os
+
+
+logger = logging.getLogger(__name__)
 
 
 def _resposta_mock(pergunta: str) -> str:
@@ -22,11 +26,11 @@ def _resposta_mock(pergunta: str) -> str:
     return "Recebi sua mensagem e posso ajudar com atendimento, suporte, pagamentos e cancelamentos."
 
 
-def gerar_resposta_chatgpt(pergunta: str) -> dict:
-    """Gera resposta com OpenAI e usa fallback local caso a chave nao exista."""
+def gerar_resposta_ia(pergunta: str) -> dict:
+    """Gera resposta com Groq e usa fallback local caso a chave nao exista."""
     texto = (pergunta or "").strip()
-    modelo = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    modelo = os.getenv("GROQ_CHAT_MODEL", "llama-3.1-8b-instant")
+    api_key = os.getenv("GROQ_API_KEY", "").strip()
 
     if not texto:
         return {
@@ -36,6 +40,7 @@ def gerar_resposta_chatgpt(pergunta: str) -> dict:
         }
 
     if not api_key:
+        logger.warning("GROQ_API_KEY nao configurada, usando resposta mock")
         return {
             "resposta": _resposta_mock(texto),
             "origem": "mock",
@@ -43,25 +48,28 @@ def gerar_resposta_chatgpt(pergunta: str) -> dict:
         }
 
     try:
-        from openai import OpenAI
+        from groq import Groq
     except ImportError as erro:
+        logger.exception("Falha ao importar SDK da Groq")
         return {
             "resposta": _resposta_mock(texto),
             "origem": "mock",
             "modelo": modelo,
-            "erro": f"openai indisponivel: {erro}",
+            "erro": "Servico de IA temporariamente indisponivel.",
         }
 
     try:
-        client = OpenAI(api_key=api_key)
+        client = Groq(api_key=api_key)
+        logger.info("Gerando resposta via Groq com modelo=%s", modelo)
         resposta = client.chat.completions.create(
             model=modelo,
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "Voce e a EVA, uma assistente de voz em portugues do Brasil. "
-                        "Responda de forma clara, curta, natural e profissional."
+                        "Voce e um assistente financeiro. "
+                        "Responda de forma objetiva, clara e com no maximo 3 frases. "
+                        "Mantenha foco em contexto bancario e seguranca financeira."
                     ),
                 },
                 {"role": "user", "content": texto},
@@ -74,13 +82,14 @@ def gerar_resposta_chatgpt(pergunta: str) -> dict:
 
         return {
             "resposta": texto_resposta,
-            "origem": "openai",
+            "origem": "groq",
             "modelo": modelo,
         }
     except Exception as erro:
+        logger.exception("Falha na chamada da Groq")
         return {
             "resposta": _resposta_mock(texto),
             "origem": "mock",
             "modelo": modelo,
-            "erro": str(erro),
+            "erro": "Nao foi possivel gerar resposta agora.",
         }

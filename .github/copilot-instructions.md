@@ -76,7 +76,7 @@ Evitar:
 
 A aplicacao deve:
 
-- captar audio do microfone ou receber upload de audio
+- captar audio do microfone do usuário pelo navegador
 - transcrever com Whisper
 - enviar a transcricao para o ChatGPT
 - gerar a resposta em texto
@@ -145,8 +145,8 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - WHISPER_MODEL=base
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - WHISPER_MODEL=small
     restart: always
 ```
 
@@ -249,7 +249,7 @@ Exemplo:
 
 ## Seguranca
 
-- nunca expor a OPENAI_API_KEY no codigo
+- nunca expor a GROQ_API_KEY no codigo
 - sempre usar variaveis de ambiente
 - validar tamanho do audio enviado
 - limitar tamanho da requisicao
