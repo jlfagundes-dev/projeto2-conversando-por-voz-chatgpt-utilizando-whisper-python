@@ -18,9 +18,8 @@ Desenvolver um assistente de voz completo, executado em ambiente containerizado 
 
 ## Demonstração do projeto
 
-<video controls width="100%" src="video_exemplo_projeto2_bootcamp_bradesco_dio.mp4"></video>
+![alt text](gif_exemplo_projeto2_bootcamp_bradesco_dio-1.gif)
 
-Se o player acima não abrir no seu visualizador, abra o arquivo [video_exemplo_projeto2_bootcamp_bradesco_dio.mp4](video_exemplo_projeto2_bootcamp_bradesco_dio.mp4) diretamente para ver e ouvir a execução da aplicação.
 
 ## Fluxo da aplicação
 
